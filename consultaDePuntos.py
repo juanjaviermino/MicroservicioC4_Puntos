@@ -19,9 +19,11 @@ def get_puntos(ps_identificacion):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         puntos_element = soup.find("td", class_="titulo1", width="30")
-        if puntos_element and "javascript:consulta_puntos();" in str(puntos_element):
+        nombre_element = soup.find("td", class_="titulo1", colspan="1")
+        if puntos_element and nombre_element and "javascript:consulta_puntos();" in str(puntos_element):
             puntos = puntos_element.get_text(strip=True)
-            return puntos
+            nombre = nombre_element.get_text(strip=True)
+            return {"puntos": puntos, "nombre": nombre}
         else:
             return "Puntos not found on the page"
 
@@ -34,7 +36,7 @@ def get_license_points():
     if not cedula:
         return jsonify({"Error": "Cédula is required"}), 400
     result = get_puntos(cedula)
-    return jsonify({"Puntos": result})
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run()
